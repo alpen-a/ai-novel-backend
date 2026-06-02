@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ainovel-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: dev
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_ADMIN_USER_ID
+        value: admin
+      - key: AUTH_ADMIN_PASSWORD
+        value: AiNovel2026!Secure
+      - key: SECRET_ENCRYPTION_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: TASK_QUEUE_BACKEND
+        value: inline
+      - key: AUTH_DEV_FALLBACK_USER_ID
+        value: local-user
