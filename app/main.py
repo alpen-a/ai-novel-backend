@@ -127,8 +127,18 @@ def _ensure_admin_user() -> None:
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     configure_logging()
     if _should_bootstrap_in_app():
-        ensure_db_schema()
-        _ensure_admin_user()
+        try:
+            ensure_db_schema()
+            _ensure_admin_user()
+        except Exception as exc:
+            log_event(
+                logger,
+                "warning",
+                event="BOOTSTRAP",
+                action="skipped",
+                exception_type=type(exc).__name__,
+                message=f"Bootstrap failed on startup: {exc}. App will continue running.",
+            )
     _warn_sqlite_single_worker()
     _ensure_local_user()
     watchdog_handle = start_project_task_watchdog()
